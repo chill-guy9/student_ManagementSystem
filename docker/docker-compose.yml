@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  # ==================== MySQL 8.0 ====================
+  mysql:
+    image: mysql:8.0
+    container_name: student-mysql
+    restart: unless-stopped
+    ports:
+      - "${MYSQL_PORT:-13306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-sms_nexus}
+      MYSQL_USER: ${MYSQL_USER:-student}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-student123}
+      TZ: Asia/Shanghai
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - mysql-conf:/etc/mysql/conf.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root123}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+      - --max-connections=200
+      - --innodb-buffer-pool-size=256M
+    networks:
+      - student-net
+
+  # ==================== Redis 7 Alpine ====================
+  redis:
+    image: redis:7-alpine
+    container_name: student-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6380}:6379"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "sh", "-c", "REDISCLI_AUTH=\"${REDIS_PASSWORD:-}\" redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    command:
+      - redis-server
+      - --appendonly yes
+      - --requirepass ${REDIS_PASSWORD:-}
+      - --maxmemory 128mb
+      - --maxmemory-policy allkeys-lru
+    networks:
+      - student-net
+
+  # ==================== 后端服务 ====================
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/backend.Dockerfile
+    container_name: student-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/sms_nexus?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-student}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-student123}
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET:-myDefaultJwtSecretKeyForDevelopmentOnlyPleaseReplaceInProduction2024}
+      TZ: Asia/Shanghai
+      JAVA_OPTS: -Xms256m -Xmx512m -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError
+    volumes:
+      - backend-logs:/app/logs
+      - ${BACKUP_DIR:-/opt/student-management/backups}:/app/backups
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/system/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - student-net
+
+  # ==================== 前端服务 ====================
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
+    container_name: student-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_HTTP_PORT:-80}:80"
+      - "${FRONTEND_HTTPS_PORT:-443}:443"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - student-net
+
+# ==================== 数据卷 ====================
+volumes:
+  mysql-data:
+    driver: local
+  mysql-conf:
+    driver: local
+  redis-data:
+    driver: local
+  backend-logs:
+    driver: local
+
+# ==================== 网络 ====================
+networks:
+  student-net:
+    driver: bridge

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sms.nexus.mapper.DashboardMapper">
+
+    <select id="getStats" resultType="java.util.Map">
+        SELECT
+            (SELECT COUNT(*) FROM students WHERE deleted = 0) as total_students,
+            (SELECT COUNT(*) FROM teachers WHERE deleted = 0) as total_teachers,
+            (SELECT COUNT(*) FROM admins WHERE deleted = 0) as total_admins,
+            (SELECT COUNT(*) FROM logs) as total_logs
+    </select>
+
+    <select id="countStudentsByDay" resultType="int">
+        SELECT COUNT(*)
+        FROM students
+        WHERE deleted = 0
+          AND created_at BETWEEN CONCAT(#{startDate}, ' 00:00:00')
+                             AND CONCAT(#{endDate}, ' 23:59:59')
+    </select>
+
+    <select id="countAdminsByDay" resultType="int">
+        SELECT COUNT(*)
+        FROM admins
+        WHERE deleted = 0
+          AND created_at BETWEEN CONCAT(#{startDate}, ' 00:00:00')
+                             AND CONCAT(#{endDate}, ' 23:59:59')
+    </select>
+
+    <select id="countTeachersByDay" resultType="int">
+        SELECT COUNT(*)
+        FROM teachers
+        WHERE deleted = 0
+          AND created_at BETWEEN CONCAT(#{startDate}, ' 00:00:00')
+                             AND CONCAT(#{endDate}, ' 23:59:59')
+    </select>
+
+    <select id="countLogsByDay" resultType="int">
+        SELECT COUNT(*)
+        FROM logs
+        WHERE created_at BETWEEN CONCAT(#{startDate}, ' 00:00:00')
+                             AND CONCAT(#{endDate}, ' 23:59:59')
+    </select>
+
+</mapper>

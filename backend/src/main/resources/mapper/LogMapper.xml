@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sms.nexus.mapper.LogMapper">
+
+    <select id="countByOperationType" resultType="java.util.Map">
+        SELECT operation_type, COUNT(*) as cnt
+        FROM logs
+        WHERE created_at BETWEEN CONCAT(#{startDate}, ' 00:00:00')
+                              AND CONCAT(#{endDate}, ' 23:59:59')
+        GROUP BY operation_type
+        ORDER BY cnt DESC
+    </select>
+
+    <select id="countByDay" resultType="java.util.Map">
+        SELECT DATE(created_at) as date, COUNT(*) as cnt
+        FROM logs
+        WHERE created_at BETWEEN CONCAT(#{startDate}, ' 00:00:00')
+                              AND CONCAT(#{endDate}, ' 23:59:59')
+        GROUP BY DATE(created_at)
+        ORDER BY date ASC
+    </select>
+
+    <select id="countByLevel" resultType="java.util.Map">
+        SELECT level, COUNT(*) as cnt
+        FROM logs
+        WHERE created_at BETWEEN CONCAT(#{startDate}, ' 00:00:00')
+                              AND CONCAT(#{endDate}, ' 23:59:59')
+        GROUP BY level
+        ORDER BY cnt DESC
+    </select>
+
+    <select id="countByHour" resultType="java.util.Map">
+        SELECT HOUR(created_at) as hour, COUNT(*) as cnt
+        FROM logs
+        WHERE created_at BETWEEN CONCAT(#{startDate}, ' 00:00:00')
+                              AND CONCAT(#{endDate}, ' 23:59:59')
+        GROUP BY HOUR(created_at)
+        ORDER BY hour ASC
+    </select>
+
+    <select id="topOperators" resultType="java.util.Map">
+        SELECT operator_name, COUNT(*) as cnt
+        FROM logs
+        WHERE created_at BETWEEN CONCAT(#{startDate}, ' 00:00:00')
+                              AND CONCAT(#{endDate}, ' 23:59:59')
+        GROUP BY operator_name
+        ORDER BY cnt DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

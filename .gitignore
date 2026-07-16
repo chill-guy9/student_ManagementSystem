@@ -1,0 +1,79 @@
+# ==================== Java / Maven ====================
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+# ==================== Node / 前端 ====================
+node_modules/
+dist/
+.vite/
+*.local
+
+# ==================== IDE ====================
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+*.swp
+*.swo
+*~
+
+# ==================== 操作系统 ====================
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ==================== 环境变量与敏感信息 ====================
+.env
+*.env.local
+*.env.*.local
+docker/.env
+
+# ==================== 日志 ====================
+*.log
+logs/
+
+# ==================== 构建产物 ====================
+build/
+out/
+tmp/
+
+# ==================== 依赖目录 ====================
+.flattened-pom.xml
+
+# ==================== SSL 证书 ====================
+docker/ssl/
+*.key
+*.crt
+*.pem
+*.p12
+
+# ==================== Redis ====================
+appendonly-*.aof
+dump.rdb
+
+# ==================== 备份文件 ====================
+backups/
+*.sql.gz
+*.sql
+
+# ==================== 其他 ====================
+*.bak
+*.tmp
+*.cache
+.npm
+.eslintcache

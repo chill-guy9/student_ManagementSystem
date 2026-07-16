@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    # In Docker, SPRING_DATASOURCE_URL is set via environment variable
+    # These are fallback defaults for non-Docker production deployments
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:13306}/${DB_NAME:sms_nexus}?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USERNAME:student}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:student123}}
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6380}
+      password: ${REDIS_PASSWORD:}
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+logging:
+  level:
+    com.sms.nexus: info
+    org.springframework.security: warn
