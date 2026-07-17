@@ -4,7 +4,7 @@ spring:
     # These are fallback defaults for non-Docker production deployments
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:13306}/${DB_NAME:sms_nexus}?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: ${SPRING_DATASOURCE_USERNAME:${DB_USERNAME:student}}
-    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:student123}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:}}
   data:
     redis:
       host: ${REDIS_HOST:redis}

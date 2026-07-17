@@ -9,16 +9,16 @@ services:
     ports:
       - "${MYSQL_PORT:-13306}:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?请设置MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-sms_nexus}
       MYSQL_USER: ${MYSQL_USER:-student}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-student123}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?请设置MYSQL_PASSWORD}
       TZ: Asia/Shanghai
     volumes:
       - mysql-data:/var/lib/mysql
       - mysql-conf:/etc/mysql/conf.d
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root123}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -71,11 +71,11 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/sms_nexus?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-student}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-student123}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:?请设置MYSQL_PASSWORD}
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
       SPRING_REDIS_PASSWORD: ${REDIS_PASSWORD:-}
-      JWT_SECRET: ${JWT_SECRET:-myDefaultJwtSecretKeyForDevelopmentOnlyPleaseReplaceInProduction2024}
+      JWT_SECRET: ${JWT_SECRET:?请设置JWT_SECRET}
       TZ: Asia/Shanghai
       JAVA_OPTS: -Xms256m -Xmx512m -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError
     volumes:

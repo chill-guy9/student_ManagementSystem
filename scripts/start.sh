@@ -121,7 +121,7 @@ if [[ ${USE_DOCKER_MYSQL} -eq 1 ]]; then
         log_info "创建并启动 MySQL 容器..."
         docker run -d \
             --name "${MYSQL_CONTAINER}" \
-            -e MYSQL_ROOT_PASSWORD=root123 \
+            -e MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:?请设置MYSQL_ROOT_PASSWORD}" \
             -e MYSQL_DATABASE=student_management \
             -p 3306:3306 \
             -v student-mysql-data:/var/lib/mysql \

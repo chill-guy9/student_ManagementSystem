@@ -11,8 +11,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:13306/sms_nexus?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: root
-    password: 123456
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
     hikari:
       minimum-idle: 5
       maximum-pool-size: 20
@@ -24,7 +24,7 @@ spring:
     redis:
       host: localhost
       port: 6380
-      password:
+      password: ${SPRING_REDIS_PASSWORD:}
       database: 0
       lettuce:
         pool:
@@ -52,7 +52,7 @@ mybatis-plus:
       logic-not-delete-value: 0
 
 jwt:
-  secret: SmsNexusSecretKey2024ForJwtTokenGenerationAndValidationMustBeLongEnough
+  secret: ${JWT_SECRET:please-change-this-to-a-long-random-secret-key-in-production}
   expiration: 86400000
 
 knife4j:

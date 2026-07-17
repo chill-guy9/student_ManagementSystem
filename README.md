@@ -155,7 +155,7 @@ docker compose logs -f
 ```bash
 # 使用 Docker 快速启动
 docker run -d --name student-mysql \
-  -e MYSQL_ROOT_PASSWORD=root123 \
+  -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
   -e MYSQL_DATABASE=sms_nexus \
   -p 13306:3306 \
   mysql:8.0 --character-set-server=utf8mb4
@@ -205,14 +205,14 @@ npm run dev
 # 数据源
 spring.datasource.url: jdbc:mysql://localhost:13306/sms_nexus
 spring.datasource.username: root
-spring.datasource.password: root123
+spring.datasource.password: ${DB_PASSWORD}
 
 # Redis
 spring.redis.host: localhost
 spring.redis.port: 6379
 
 # JWT
-jwt.secret: your-secret-key
+jwt.secret: ${JWT_SECRET}
 jwt.expiration: 86400000
 ```
 
@@ -253,9 +253,9 @@ jwt.expiration: 86400000
 
 | 角色 | 用户名 | 密码 |
 |------|--------|------|
-| 管理员 | admin | admin123 |
-| 教师 | teacher | teacher123 |
-| 学生 | student | student123 |
+| 管理员 | admin | 请在部署时修改 |
+| 教师 | teacher | 请在部署时修改 |
+| 学生 | student | 请在部署时修改 |
 
 > **注意**：生产环境请务必修改默认密码！
 
@@ -287,7 +287,7 @@ chmod +x scripts/*.sh
 
 ```bash
 # 使用默认配置备份
-./scripts/backup.sh --db-pass root123
+./scripts/backup.sh --db-pass ${DB_PASSWORD}
 
 # 自定义数据库连接
 ./scripts/backup.sh \
@@ -295,11 +295,11 @@ chmod +x scripts/*.sh
   --db-port 13306 \
   --db-name sms_nexus \
   --db-user root \
-  --db-pass root123 \
+  --db-pass ${DB_PASSWORD} \
   --backup-dir /data/backups
 
 # 带告警通知
-./scripts/backup.sh --db-pass root123 --webhook-url https://hooks.example.com/notify
+./scripts/backup.sh --db-pass ${DB_PASSWORD} --webhook-url https://hooks.example.com/notify
 ```
 
 ### restore.sh - 数据库恢复
@@ -308,12 +308,12 @@ chmod +x scripts/*.sh
 # 从备份文件恢复
 ./scripts/restore.sh \
   --backup-file /data/backups/sms_nexus_20240101_120000.sql.gz \
-  --db-pass root123
+  --db-pass ${DB_PASSWORD}
 
 # 跳过确认提示（自动化场景）
 ./scripts/restore.sh \
   --backup-file /data/backups/backup.sql.gz \
-  --db-pass root123 \
+  --db-pass ${DB_PASSWORD} \
   --force
 ```
 
